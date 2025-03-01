@@ -9,5 +9,4 @@ public class ExpenseCategorizationApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(ExpenseCategorizationApiApplication.class, args);
     }
-
 }
