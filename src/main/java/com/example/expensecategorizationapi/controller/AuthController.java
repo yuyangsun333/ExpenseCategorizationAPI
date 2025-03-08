@@ -1,43 +1,60 @@
 package com.example.expensecategorizationapi.controller;
 
 import com.example.expensecategorizationapi.model.User;
+import com.example.expensecategorizationapi.security.JwtUtils;
 import com.example.expensecategorizationapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
     private UserService userService;
-
+    @Autowired
+    private JwtUtils jwtUtils;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @PostMapping("/register")
-    public User register(@RequestBody Map<String, String> payload) {
-        String username = payload.get("username");
-        String email = payload.get("email");
-        String password = payload.get("password");
+    public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        String email = request.get("email");
+        String password = request.get("password");
+        User user = userService.registerUser(username, email, password);
 
-        return userService.registerUser(username, email, password);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "User registered successfully");
+        responseBody.put("username", user.getUsername());
+        responseBody.put("email", user.getEmail());
+        responseBody.put("userId", user.getId());
+        return ResponseEntity.ok(responseBody);
     }
-
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        String password = payload.get("password");
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String password = request.get("password");
 
-        String token = userService.loginUser(email, password);
-        return Map.of("token", token);
-    }
+        // Authenticate using email and password
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
 
+        // Generate a JWT token with the email as subject
+        String token = jwtUtils.generateJwtToken(email);
 
-    @GetMapping("/profile/{userId}")
-    public User getProfile(@PathVariable String userId) {
-        return userService.getUserProfile(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("token", token);
+        return ResponseEntity.ok(responseBody);
     }
 }
