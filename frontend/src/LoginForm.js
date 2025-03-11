@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
     const [email, setEmail]       = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage]   = useState('');
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -22,10 +24,9 @@ function LoginForm() {
             }
 
             const data = await response.json();
-            // data should be { token: "JWT_TOKEN_HERE" }
             localStorage.setItem('jwtToken', data.token);
             setMessage('Login successful!');
-            // Optionally, navigate to a protected page
+            navigate('/dashboard');
         } catch (error) {
             setMessage(error.message);
         }

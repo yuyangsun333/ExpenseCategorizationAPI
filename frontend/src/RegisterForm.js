@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 
 function RegisterForm() {
     const [username, setUsername] = useState('');
-    const [email, setEmail]     = useState('');
+    const [email, setEmail]       = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage]   = useState('');
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        setMessage(''); // Clear any previous messages
+        setMessage('');
 
         try {
             const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/register`, {
@@ -18,7 +18,6 @@ function RegisterForm() {
             });
 
             if (!response.ok) {
-                // e.g. 400 or 500 error from backend
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Registration failed');
             }
