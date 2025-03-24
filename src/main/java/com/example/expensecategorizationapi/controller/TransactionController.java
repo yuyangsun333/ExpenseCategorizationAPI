@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
-
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
@@ -28,7 +27,7 @@ public class TransactionController {
         LocalDateTime date = LocalDateTime.parse((String) request.get("date"));
         String description = (String) request.get("description");
 
-        // Create a Transaction object
+        // Create a Transaction object yess
         Transaction transaction = new Transaction(userId, category, amount, date, description);
         Transaction saved = transactionService.addTransaction(transaction);
 
