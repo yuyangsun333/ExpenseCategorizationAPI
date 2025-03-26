@@ -14,7 +14,6 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-
     @PostMapping("/register")
     public User register(@RequestBody Map<String, String> payload) {
         String username = payload.get("username");
@@ -24,7 +23,6 @@ public class AuthController {
         return userService.registerUser(username, email, password);
     }
 
-
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
@@ -33,7 +31,6 @@ public class AuthController {
         String token = userService.loginUser(email, password);
         return Map.of("token", token);
     }
-
 
     @GetMapping("/profile/{userId}")
     public User getProfile(@PathVariable String userId) {
