@@ -1,24 +1,28 @@
+// src/App.js
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import LoginForm from './LoginForm';
-import RegisterForm from './RegisterForm';
-import PaymentForm from './PaymentForm';
-import TransactionForm from './TransactionForm';
-import ExpenseForm from './ExpenseForm';
-import CompanySearch from './CompanySearch';
+import { Routes, Route, Link } from 'react-router-dom';
+import RegisterPage from './RegisterPage';
+import LoginPage from './LoginPage';
+import PaymentEntryPage from './PaymentEntryPage';
+import PaymentHistoryPage from './PaymentHistoryPage';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<h2>Home Page</h2>} />
-      <Route path="/login" element={<LoginForm />} />
-      <Route path="/register" element={<RegisterForm />} />
-      <Route path="/payment" element={<PaymentForm />} />
-      <Route path="/transaction" element={<TransactionForm />} />
-      <Route path="/expense" element={<ExpenseForm />} />
-      <Route path="/company" element={<CompanySearch />} />
-      <Route path="*" element={<h2>404 - Not Found</h2>} />
-    </Routes>
+    <div>
+      <nav style={{ padding: '1rem', backgroundColor: '#f0f0f0' }}>
+        <Link to="/register" style={{ marginRight: '1rem' }}>Register</Link>
+        <Link to="/login" style={{ marginRight: '1rem' }}>Login</Link>
+        <Link to="/payment" style={{ marginRight: '1rem' }}>Enter Payment</Link>
+        <Link to="/history">Payment History</Link>
+      </nav>
+      <Routes>
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/payment" element={<PaymentEntryPage />} />
+        <Route path="/history" element={<PaymentHistoryPage />} />
+        <Route path="*" element={<div>Page Not Found</div>} />
+      </Routes>
+    </div>
   );
 }
 
