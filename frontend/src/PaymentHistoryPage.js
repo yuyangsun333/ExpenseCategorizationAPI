@@ -1,14 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PaymentHistoryPage = () => {
-  const [userId, setUserId] = useState('');
   const [transactions, setTransactions] = useState([]);
   const [grouped, setGrouped] = useState({});
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
-  const fetchTransactions = async () => {
+  useEffect(() => {
+    const loggedInEmail = localStorage.getItem('loggedInEmail');
+    if (!loggedInEmail) {
+      navigate('/login');
+    } else {
+      fetchTransactions(loggedInEmail);
+    }
+  }, [navigate]);
+
+  const fetchTransactions = async (email) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/transactions/${userId}`);
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/transactions/${email}`);
       if (!response.ok) {
         const err = await response.text();
         throw new Error(err);
@@ -21,37 +31,20 @@ const PaymentHistoryPage = () => {
     }
   };
 
+  // Group transactions by month (using first 7 characters of ISO date, e.g., "2025-03")
   const groupByMonth = (data) => {
-    // Group by month, assuming date is in ISO format "YYYY-MM-DDTHH:MM:SS"
     const groups = data.reduce((acc, txn) => {
-      const month = txn.date.substring(0, 7); // "YYYY-MM"
-      if (!acc[month]) {
-        acc[month] = [];
-      }
+      const month = txn.date.substring(0, 7); // e.g., "2025-03"
+      if (!acc[month]) acc[month] = [];
       acc[month].push(txn);
       return acc;
     }, {});
     setGrouped(groups);
   };
 
-  useEffect(() => {
-    if (userId) {
-      fetchTransactions();
-    }
-  }, [userId]);
-
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: '1rem' }}>
       <h2>Payment History</h2>
-      <div>
-        <input
-          type="text"
-          placeholder="Enter Your User ID"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-        />
-        <button onClick={fetchTransactions}>Fetch History</button>
-      </div>
       {message && <p>{message}</p>}
       {Object.keys(grouped).length > 0 ? (
         Object.entries(grouped).map(([month, txns]) => (
@@ -60,7 +53,9 @@ const PaymentHistoryPage = () => {
             <ul>
               {txns.map((txn) => (
                 <li key={txn.id}>
-                  {txn.date} - {txn.merchantName} - {txn.amount} - {txn.category} - {txn.description}
+                  <strong>Date:</strong> {txn.date} | <strong>Merchant:</strong> {txn.merchantName} |{' '}
+                  <strong>Amount:</strong> {txn.amount} | <strong>Category:</strong> {txn.category} |{' '}
+                  <em>{txn.description}</em>
                 </li>
               ))}
             </ul>

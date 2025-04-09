@@ -16,8 +16,7 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    // For simplicity, no JWT code here.
-    // This is a minimal example to illustrate storing user in MongoDB.
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> req) {
         String email = req.get("email");
