@@ -11,8 +11,9 @@ public class Transaction {
 
     @Id
     private String id;
-    private String userId;       // link to a User's id
-    private String category;
+    private String userId;
+    private String merchant;   // The merchant entered by the user
+    private String category;   // This will be auto-determined
     private BigDecimal amount;
     private LocalDateTime date;
     private String description;
@@ -37,6 +38,14 @@ public class Transaction {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getMerchant() {
+        return merchant;
+    }
+
+    public void setMerchant(String merchant) {
+        this.merchant = merchant;
     }
 
     public String getCategory() {

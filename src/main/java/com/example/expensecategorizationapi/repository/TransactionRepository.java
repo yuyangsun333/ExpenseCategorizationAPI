@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends MongoRepository<Transaction, String> {
-    // Example custom method
     List<Transaction> findByUserId(String userId);
 }

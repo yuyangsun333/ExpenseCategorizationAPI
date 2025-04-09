@@ -1,42 +1,50 @@
-package com.example.expensecategorizationapi.controller;
+package com.example.expensecategorizationapi.service;
 
 import com.example.expensecategorizationapi.model.Transaction;
-import com.example.expensecategorizationapi.service.TransactionService;
+import com.example.expensecategorizationapi.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:3000")
-@RestController
-@RequestMapping("/api/transactions")
-public class TransactionController {
+@Service
+public class TransactionService {
 
     @Autowired
-    private TransactionService transactionService;
+    private TransactionRepository transactionRepository;
 
-    @PostMapping
-    public ResponseEntity<Transaction> createTransaction(@RequestBody Map<String, Object> request) {
-        // Extract fields from the JSON payload
-        String userId = (String) request.get("userId");
-        String category = (String) request.get("category");
-        BigDecimal amount = new BigDecimal(request.get("amount").toString());
-        LocalDateTime date = LocalDateTime.parse((String) request.get("date"));
-        String description = (String) request.get("description");
-
-        // Create a Transaction object yess
-        Transaction transaction = new Transaction(userId, category, amount, date, description);
-        Transaction saved = transactionService.addTransaction(transaction);
-
-        return ResponseEntity.ok(saved);
+    // Save a transaction
+    public Transaction addTransaction(Transaction transaction) {
+        return transactionRepository.save(transaction);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<Transaction>> getUserTransactions(@PathVariable String userId) {
-        List<Transaction> transactions = transactionService.getTransactionsForUser(userId);
-        return ResponseEntity.ok(transactions);
+    // Get all transactions for a particular user
+    public List<Transaction> getTransactionsForUser(String userId) {
+        return transactionRepository.findByUserId(userId);
+    }
+
+    // Compute total spending for the user
+    public BigDecimal calculateTotalSpending(String userId) {
+        List<Transaction> transactions = transactionRepository.findByUserId(userId);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Transaction tx : transactions) {
+            total = total.add(tx.getAmount());
+        }
+        return total;
+    }
+
+    // Compute spending totals for each category for the user
+    public Map<String, BigDecimal> calculateTotalsByCategory(String userId) {
+        List<Transaction> transactions = transactionRepository.findByUserId(userId);
+        Map<String, BigDecimal> totalsByCategory = new HashMap<>();
+        for (Transaction tx : transactions) {
+            String category = tx.getCategory();
+            BigDecimal currentTotal = totalsByCategory.getOrDefault(category, BigDecimal.ZERO);
+            totalsByCategory.put(category, currentTotal.add(tx.getAmount()));
+        }
+        return totalsByCategory;
     }
 }
