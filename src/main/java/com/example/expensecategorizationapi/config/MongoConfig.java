@@ -3,7 +3,7 @@ package com.example.expensecategorizationapi.config;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
-public class ConnectToDB {
+public class MongoConfig {
 
    public static void main( String args[] ) {
 
