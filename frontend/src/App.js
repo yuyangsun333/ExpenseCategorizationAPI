@@ -1,28 +1,28 @@
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import RegisterPage from './RegisterPage';
 import LoginPage from './LoginPage';
 import PaymentEntryPage from './PaymentEntryPage';
 import PaymentHistoryPage from './PaymentHistoryPage';
 
-function App() {
-  return (
-    <div>
-      <nav style={{ padding: '1rem', backgroundColor: '#f0f0f0' }}>
-        <Link to="/register" style={{ marginRight: '1rem' }}>Register</Link>
-        <Link to="/login" style={{ marginRight: '1rem' }}>Login</Link>
-        <Link to="/payment" style={{ marginRight: '1rem' }}>Enter Payment</Link>
-        <Link to="/history">Payment History</Link>
-      </nav>
-      <Routes>
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/payment" element={<PaymentEntryPage />} />
-        <Route path="/history" element={<PaymentHistoryPage />} />
-        <Route path="*" element={<div>Page Not Found</div>} />
-      </Routes>
-    </div>
-  );
-}
+const App = () => {
+    return (
+        <div>
+            <nav>
+                <a href="/register">Register</a> | <a href="/login">Login</a> |
+                <a href="/payment">Enter Payment</a> | <a href="/history">Payment History</a>
+            </nav>
+
+            <Routes>
+                <Route path="/" element={<h2>Welcome! Choose a page above.</h2>} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/payment" element={<PaymentEntryPage />} />
+                <Route path="/history" element={<PaymentHistoryPage />} />
+                <Route path="*" element={<h2>Page Not Found</h2>} />
+            </Routes>
+        </div>
+    );
+};
 
 export default App;

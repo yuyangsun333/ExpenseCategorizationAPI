@@ -1,92 +1,33 @@
 package com.example.expensecategorizationapi.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Document(collection = "transactions")
 public class Transaction {
-
-    @Id
-    private String id;
-
-    // This will store the user ID (the same as in the "User" entity)
-    private String userId;
-
-    private String merchantName;
-    private String category;    // auto-determined
+    private String email;
+    private String merchant;
     private BigDecimal amount;
-    private LocalDateTime date;
+    private String date;
     private String description;
+    private String category;
 
-    public Transaction() {}
+    // Getters and setters
 
-    public Transaction(String userId, String merchantName, BigDecimal amount,
-                       LocalDateTime date, String description) {
-        this.userId = userId;
-        this.merchantName = merchantName;
-        this.amount = amount;
-        this.date = date;
-        this.description = description;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    // getters / setters ...
-    public String getId() {
-        return id;
-    }
+    public String getMerchant() { return merchant; }
+    public void setMerchant(String merchant) { this.merchant = merchant; }
 
-    public String getUserId() {
-        return userId;
-    }
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public String getMerchantName() {
-        return merchantName;
-    }
+    public String getDate() { return date; }
+    public void setDate(String date) { this.date = date; }
 
-    public String getCategory() {
-        return category;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    // Setters
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setMerchantName(String merchantName) {
-        this.merchantName = merchantName;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 }

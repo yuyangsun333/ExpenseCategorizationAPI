@@ -1,22 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const PaymentHistoryPage = () => {
-  const [transactions, setTransactions] = useState([]);
   const [grouped, setGrouped] = useState({});
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loggedInEmail = localStorage.getItem('loggedInEmail');
-    if (!loggedInEmail) {
-      navigate('/login');
-    } else {
-      fetchTransactions(loggedInEmail);
-    }
-  }, [navigate]);
-
-  const fetchTransactions = async (email) => {
+  const fetchTransactions = useCallback(async (email) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/transactions/${email}`);
       if (!response.ok) {
@@ -24,14 +14,12 @@ const PaymentHistoryPage = () => {
         throw new Error(err);
       }
       const data = await response.json();
-      setTransactions(data);
       groupByMonth(data);
     } catch (error) {
       setMessage(error.message);
     }
-  };
+  }, []);
 
-  // Group transactions by month (using first 7 characters of ISO date, e.g., "2025-03")
   const groupByMonth = (data) => {
     const groups = data.reduce((acc, txn) => {
       const month = txn.date.substring(0, 7); // e.g., "2025-03"
@@ -42,29 +30,38 @@ const PaymentHistoryPage = () => {
     setGrouped(groups);
   };
 
+  useEffect(() => {
+    const loggedInEmail = localStorage.getItem('loggedInEmail');
+    if (!loggedInEmail) {
+      navigate('/login');
+    } else {
+      fetchTransactions(loggedInEmail);
+    }
+  }, [navigate, fetchTransactions]);
+
   return (
-    <div style={{ padding: '1rem' }}>
-      <h2>Payment History</h2>
-      {message && <p>{message}</p>}
-      {Object.keys(grouped).length > 0 ? (
-        Object.entries(grouped).map(([month, txns]) => (
-          <div key={month}>
-            <h3>{month}</h3>
-            <ul>
-              {txns.map((txn) => (
-                <li key={txn.id}>
-                  <strong>Date:</strong> {txn.date} | <strong>Merchant:</strong> {txn.merchantName} |{' '}
-                  <strong>Amount:</strong> {txn.amount} | <strong>Category:</strong> {txn.category} |{' '}
-                  <em>{txn.description}</em>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      ) : (
-        <p>No transactions found.</p>
-      )}
-    </div>
+      <div style={{ padding: '1rem' }}>
+        <h2>Payment History</h2>
+        {message && <p>{message}</p>}
+        {Object.keys(grouped).length > 0 ? (
+            Object.entries(grouped).map(([month, txns]) => (
+                <div key={month}>
+                  <h3>{month}</h3>
+                  <ul>
+                    {txns.map((txn, idx) => (
+                        <li key={idx}>
+                          <strong>Date:</strong> {txn.date} | <strong>Merchant:</strong> {txn.merchantName} |{' '}
+                          <strong>Amount:</strong> {txn.amount} | <strong>Category:</strong> {txn.category} |{' '}
+                          <em>{txn.description}</em>
+                        </li>
+                    ))}
+                  </ul>
+                </div>
+            ))
+        ) : (
+            <p>No transactions found.</p>
+        )}
+      </div>
   );
 };
 

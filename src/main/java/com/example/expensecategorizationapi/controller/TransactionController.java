@@ -6,62 +6,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
-//
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/transactions")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class TransactionController {
-///
 
     @Autowired
     private TransactionService transactionService;
 
-    /**
-     * Endpoint to create a new transaction.
-     * The request JSON should contain:
-     *  - userId (String)
-     *  - merchantName (String) -> the company name the user enters
-     *  - amount (numeric; parsed as BigDecimal)
-     *  - date (ISO-8601 formatted string, e.g. "2025-03-26T14:00:00")
-     *  - description (String)
-     *
-     * The category is NOT provided by the client. It is determined automatically
-     * in the service based on the merchantName.
-     */
     @PostMapping
-    public ResponseEntity<Transaction> createTransaction(@RequestBody Map<String, Object> payload) {
-        // Extract required fields from the JSON payload
-        String userId = (String) payload.get("userId");
-        String merchantName = (String) payload.get("merchantName");
-        BigDecimal amount = new BigDecimal(payload.get("amount").toString());
-        LocalDateTime date = LocalDateTime.parse((String) payload.get("date"));
-        String description = (String) payload.get("description");
+    public ResponseEntity<Transaction> saveTransaction(@RequestBody Map<String, Object> request) {
+        String email = (String) request.get("email");
+        String merchant = (String) request.get("merchant");
+        double amount = Double.parseDouble(request.get("amount").toString());
+        String date = (String) request.get("date");
+        String description = (String) request.get("description");
+        String category = (String) request.get("category");
 
-        // Build the Transaction object; note that category is not set by the client.
-        Transaction transaction = new Transaction(userId, merchantName, amount, date, description);
-
-        // The service layer will automatically set the category (via CategorizationService) before saving.
-        Transaction savedTransaction = transactionService.addTransaction(transaction);
-
-        return ResponseEntity.ok(savedTransaction);
+        Transaction txn = transactionService.saveTransaction(email, merchant, date, amount, category, description);
+        return ResponseEntity.ok(txn);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<Transaction>> getUserTransactions(@PathVariable String userId) {
-        List<Transaction> transactions = transactionService.getTransactionsForUser(userId);
-        return ResponseEntity.ok(transactions);
-    }
-
-    @GetMapping("/summary/{userId}")
-    public ResponseEntity<Map<String, Object>> getSummary(@PathVariable String userId) {
-        return ResponseEntity.ok(Map.of(
-            "totalSpending", transactionService.calculateTotalSpending(userId),
-            "totalsByCategory", transactionService.calculateTotalsByCategory(userId)
-        ));
+    @GetMapping("/{email}")
+    public ResponseEntity<Object> getUserTransactions(@PathVariable String email) {
+        return ResponseEntity.ok(transactionService.getTransactionsByEmail(email));
     }
 }
