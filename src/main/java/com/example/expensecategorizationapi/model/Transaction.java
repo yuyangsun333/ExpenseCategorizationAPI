@@ -1,33 +1,99 @@
 package com.example.expensecategorizationapi.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Document(collection = "transactions")
 public class Transaction {
-    private String email;
-    private String merchant;
+
+    @Id
+    private String id;
+    private String userId;
+    private String email; // Added for Option 2
+    private String merchantName;
     private BigDecimal amount;
-    private String date;
+    private LocalDateTime date;
     private String description;
     private String category;
 
+    public Transaction() {}
+
+    public Transaction(String userId, String email, String merchantName, BigDecimal amount, LocalDateTime date,
+                       String description, String category) {
+        this.userId = userId;
+        this.email = email;
+        this.merchantName = merchantName;
+        this.amount = amount;
+        this.date = date;
+        this.description = description;
+        this.category = category;
+    }
+
     // Getters and setters
+    public String getId() {
+        return id;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getUserId() {
+        return userId;
+    }
 
-    public String getMerchant() { return merchant; }
-    public void setMerchant(String merchant) { this.merchant = merchant; }
+    public String getEmail() {
+        return email;
+    }
 
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    public String getMerchantName() {
+        return merchantName;
+    }
 
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public LocalDateTime getDate() {
+        return date;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public String getDescription() {
+        return description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }

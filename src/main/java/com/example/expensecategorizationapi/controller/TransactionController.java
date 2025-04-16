@@ -23,7 +23,7 @@ public class TransactionController {
         double amount = Double.parseDouble(request.get("amount").toString());
         String date = (String) request.get("date");
         String description = (String) request.get("description");
-        String category = (String) request.get("category");
+        String category = (String) request.getOrDefault("category", "");
 
         Transaction txn = transactionService.saveTransaction(email, merchant, date, amount, category, description);
         return ResponseEntity.ok(txn);
