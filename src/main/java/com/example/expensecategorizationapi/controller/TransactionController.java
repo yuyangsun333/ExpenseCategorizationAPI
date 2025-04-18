@@ -19,7 +19,7 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<Transaction> saveTransaction(@RequestBody Map<String, Object> request) {
         String email = (String) request.get("email");
-        String merchant = (String) request.get("merchant");
+        String merchant = (String) request.get("merchantName");
         double amount = Double.parseDouble(request.get("amount").toString());
         String date = (String) request.get("date");
         String description = (String) request.get("description");

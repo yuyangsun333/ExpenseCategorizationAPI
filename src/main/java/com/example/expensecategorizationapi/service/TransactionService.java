@@ -8,13 +8,14 @@ import org.bson.Document;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class TransactionService {
@@ -27,7 +28,6 @@ public class TransactionService {
         BigDecimal bdAmount = BigDecimal.valueOf(amount);
         LocalDateTime date = parseDate(dateStr);
 
-        // userId is not used in your project, passing null
         Transaction txn = new Transaction(null, email, merchant, bdAmount, date, description, category);
 
         MongoDatabase db = MongoConfig.connect();
@@ -67,24 +67,22 @@ public class TransactionService {
     }
 
     private String findCategoryFromCSV(String merchantName) {
-        String filePath = "src/main/resources/final_cleaned_data.csv";  // updated relative path
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                getClass().getClassLoader().getResourceAsStream("final_cleaned_data.csv"), StandardCharsets.UTF_8))) {
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            br.readLine(); // skip header
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
+            String line = reader.readLine(); // skip header
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",", -1);  // -1 keeps trailing empty strings
                 if (parts.length >= 3) {
                     String name = parts[0].trim().toLowerCase(Locale.ROOT);
-                    if (merchantName.toLowerCase(Locale.ROOT).contains(name)) {
-                        return parts[2].trim();
+                    if (!name.isEmpty() && merchantName.toLowerCase(Locale.ROOT).contains(name)) {
+                        return parts[2].trim(); // return category
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return "Uncategorized";
     }
 
